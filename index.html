@@ -1,0 +1,44 @@
+<html>
+    <body>
+        <h1>color removerizer</h1>
+        <input type="text" placeholder="username" id="username">
+        <input type="password" placeholder="password" id="password">
+        <button id="removerize">removerize!</button>
+        <p id="text">(sorry 2fa users)</p>
+        <script type="module">
+            const text = document.getElementById("text")
+            const user = document.getElementById("username")
+            const pswd = document.getElementById("password")
+            document.getElementById("removerize").addEventListener("click", async function(){
+                text.innerText = "color removerizing..."
+                const authreq = await fetch("https://api.meower.org/auth/login", {
+                    "headers": {
+                        "Content-Type": "application/json",
+                    },
+                    "body": JSON.stringify({username:user.value,password:pswd.value}),
+                    "method": "POST"
+                });
+                const authjson = await authreq.json();
+                if (authjson.error) {
+                    text.innerText = "auth failed!";
+                    return;
+                }
+                const token = authjson.token;
+                const colorreq = await fetch("https://api.meower.org/me/config", {
+                    "headers": {
+                        "Content-Type": "application/json",
+                        "token": token,
+                    },
+                    "body": JSON.stringify({avatar_color:"!color"}),
+                    "method": "PATCH"
+                }); 
+                const colorjson = await colorreq.json();
+                if (colorjson.error) {
+                    text.innerText = "color removerizing failed!";
+                    return;
+                }
+                text.innerText = "successfully color removerized!";
+            })
+        </script>
+    </body>
+</html>
